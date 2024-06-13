@@ -1,36 +1,31 @@
-import { useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
-import axios from "axios";
+import { useNavigate, useParams } from "react-router-dom";
+import useBlogPosts from "../customHook/useBlogPosts";
 
 function ViewPostPage() {
   const navigate = useNavigate();
 
-  const [posts, setPosts] = useState([]);
-  const [isError, setIsError] = useState(null);
-  const [isLoading, setIsLoading] = useState(null);
+  const params = useParams();
 
-  const getPosts = async () => {
-    try {
-      setIsError(false);
-      setIsLoading(true);
-      const results = await axios("http://localhost:4000/posts");
-      setPosts(results.data.data);
-      setIsLoading(false);
-    } catch (error) {
-      setIsError(true);
-    }
-  };
+  console.log(params);
 
-  useEffect(() => {
-    getPosts();
-  }, []);
+  const { posts, isError, isLoading } = useBlogPosts(
+    "http://localhost:4000/posts"
+  );
 
   return (
     <div>
       <h1>View Post Page</h1>
       <div className="view-post-container">
-        <h2>Post Title</h2>
-        <p>Content</p>
+        {posts
+          .filter(({ id }) => id == params.id)
+          .map((item) => (
+            <h2>{item.title}</h2>
+          ))}
+        {posts
+          .filter(({ id }) => id == params.id)
+          .map((item) => (
+            <p>{item.content}</p>
+          ))}
       </div>
 
       <hr />
